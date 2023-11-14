@@ -1,5 +1,8 @@
+; global offset of the boot sector
+[org 0x7c00]
+
 mov ah, 0x0e ; tty mode
-mov al, 'H'
+mov al, [the_data]
 int 0x10
 mov al, 'e'
 int 0x10
@@ -25,9 +28,12 @@ int 0x10
 mov al, '!'
 int 0x10
 
+the_data:
+    db "H"
+
 jmp $ ; jump to current address = infinite loop
 
 ; padding
 times 510 - ($-$$) db 0
 ; magic number
-dw 0xaa55 
+dw 0xaa55
