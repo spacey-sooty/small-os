@@ -1,16 +1,33 @@
 ; global offset of the boot sector
 [org 0x7c00]
 
+mov bp, 0x8000 ; this is an address far away from 0x7c00 so that we don't get overwritten
+mov sp, bp ; if the stack is empty then sp points to bp
+
 mov ah, 0x0e ; tty mode
 mov al, [the_data]
 int 0x10
-mov al, 'e'
-int 0x10
-mov al, 'l'
-int 0x10
-int 0x10 ; 'l' is still on al, remember?
-mov al, 'o'
-int 0x10
+
+push 'o'
+push 'l'
+push 'e'
+
+; recover our characters using the standard procedure: 'pop'
+; We can only pop full words so we need an auxiliary register to manipulate
+; the lower byte
+pop bx
+mov al, bl
+int 0x10 ; prints e
+
+pop bx
+mov al, bl
+int 0x10 ; prints l
+int 0x10 ; prints l again
+
+pop bx
+mov al, bl
+int 0x10 ; prints o
+
 mov al, ','
 int 0x10
 mov al, ''
